@@ -22,17 +22,17 @@ class BreakOut
 
 public:
 
-	void MoveBoard(int DeltaX) 
+	void MoveBoard(int DeltaX) // отвечает за передвижение платформы и шарика на нем
 	{
-		if (x + DeltaX < 1 || x+DeltaX+3 > 9)
+		if (x + DeltaX < 1 || x+DeltaX+3 > 9) // убирает возможность выхода платформы за рамки
 			return;
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 4; ++i) // удаляет платформу
 			field[y][x + i] = 0;
 		x += DeltaX;
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 4; ++i) // создает платформу на передвинутом месте
 			field[y][x + i] = 7;
 
-		if (onBoard)
+		if (onBoard) // если шарик лежит на платформе, то двигается с ней
 		{
 			field[ball_y][ball_x] = 0;
 			ball_x += DeltaX;
@@ -43,22 +43,22 @@ public:
 		display();
 	}
 
-	void GetInput()
+	void GetInput() // отвечает за ввод клавиш
 	{
 		if (_kbhit())
 		{
 			char key = _getch();
 			switch (key)
 			{
-			case 'd': MoveBoard(1); break;
-			case 'a': MoveBoard(-1); break;
-			case ' ': onBoard = false; x_Dir = 1; y_Dir = 1;  break;
+			case 'd': MoveBoard(1); break; // движение вправо
+			case 'a': MoveBoard(-1); break; // движение влево
+			case ' ': onBoard = false; x_Dir = 1; y_Dir = 1;  break; // отпускание шарика от платформы
 
 			}
 		}
 	}
 
-	void display()
+	void display() // отвечает за отобравжение игры
 	{
 
 		system("cls");
@@ -67,13 +67,13 @@ public:
 			for (int j = 0; j < 11; ++j)
 				switch (field[i][j])
 				{
-				case 8: cout << '|'; break;
-				case 0: cout << " "; break;
-				default: cout << "#"; break;
+				case 8: cout << '|'; break; // границы поля
+				case 0: cout << " "; break; // Пустое пространство
+				default: cout << "#"; break; // платформа, шарик, плитки
 				}
 			cout << endl;
 		}
-		cout << score << endl;
+		cout << score << endl; // вывод счета
 
 		if (gameOver)
 		{
@@ -83,7 +83,7 @@ public:
 
 	}
 
-	void GameOver()
+	void GameOver() // отвечает за вывод текста при проигрыше и продолжении игры заново
 	{
 		cout << "Game OVER !!!!!" << endl;
 		cout << score << endl;
@@ -97,20 +97,20 @@ public:
 		}
 	}
 
-	void update()
+	void update() // отвечает за обновление движения шарика
 	{
 		if (!onBoard)
 			{
-				field[ball_y][ball_x] = 0;
-				if (ball_x + x_Dir == 10 || ball_x + x_Dir == 0)
+				field[ball_y][ball_x] = 0; 
+				if (ball_x + x_Dir == 10 || ball_x + x_Dir == 0)// Условие стен для шарика
 					x_Dir *= -1;
-				if (ball_y - y_Dir == 0 || field[ball_y - y_Dir][ball_x + x_Dir] == 7)
+				if (ball_y - y_Dir == 0 || field[ball_y - y_Dir][ball_x + x_Dir] == 7) // также учитывается платформа
 					y_Dir *= -1;
 				
 
-				Collide();
+				Collide(); // условие плиток для шарика
 			
-				if (ball_y == 16)
+				if (ball_y == 16) // В случае падения шарика
 				{
 					GameOver();
 					return;
@@ -124,13 +124,13 @@ public:
 		}
 		
 	}
-	void Destroy(int _x, int _y)
+	void Destroy(int _x, int _y) // уничтожение плитки и зачисление очков
 	{
 		field[_y][_x] = 0;
 		score += 100;
 	}
 
-	void Collide()
+	void Collide() // отвечает за взаимодействие шарика с плитками
 	{
 		if(field[ball_y][ball_x + x_Dir] == 2 & field[ball_y - y_Dir][ball_x] == 2)
 		{
@@ -141,8 +141,6 @@ public:
 			return;
 		}
 
-		
-		
 		if (field[ball_y][ball_x + x_Dir] == 2)
 		{
 			Destroy(ball_x + x_Dir, ball_y);
@@ -167,7 +165,7 @@ public:
 
 	}
 
-	void start()
+	void start() // отвечает за начальную позицию игры
 	{
 		for (int i = 0; i < 18; ++i)
 			for (int j = 0; j < 11; ++j)
@@ -184,11 +182,10 @@ public:
 		ball_y = 15;
 		field[ball_y][ball_x] = 5;
 		DrawLevel();
-
 		display();
 	}
 
-	void DrawLevel()
+	void DrawLevel() // "Прорисовка" уровня
 	{
 		for (int i = 2; i < 9; ++i)
 		{
@@ -204,7 +201,7 @@ public:
 		display();
 	}
 
-	void loop()
+	void loop() //отвечает за бесконечный цикл игры
 	{
 		level = 1;
 		int count = 0;
