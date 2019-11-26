@@ -82,7 +82,7 @@ public:
       else if (digitalRead(LEFT_pin)==LOW||(analogRead(ANALOG_X_pin)< 320))
         MoveBoard(-1);
 
-      if (digitalRead(UP_pin)==LOW||(analogRead(ANALOG_Y_pin)> 553))
+      if ((digitalRead(UP_pin)==LOW||(analogRead(ANALOG_Y_pin)> 553))&&onBoard)
       {
         onBoard = false; x_Dir = 1; y_Dir = 1;
       } 
