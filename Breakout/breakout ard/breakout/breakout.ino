@@ -456,6 +456,12 @@ public:
     LCD.setContrast(contrast);
       speed = 600;
       //speed -= difficulty * 100;
+
+if(digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_F)==LOW)
+        {
+          ShowMenu();
+          delay(1000);
+        }
     
     start();
     while (!gameOver)
