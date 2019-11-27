@@ -16,6 +16,32 @@ extern unsigned char SmallFont[];
 //Функция сброса
 void(* resetFunc) (void) = 0;
 
+uint8_t RotatedNumbers[10][6]
+{
+  { 62, 81, 73, 69, 62, 0},
+  { 0, 1, 127, 33, 0, 0},
+  { 49, 73, 69, 67, 33, 0},
+  { 70, 105, 81, 65, 66, 0},
+  { 4, 127, 36, 20, 12, 0},
+  { 78, 81, 81, 81, 114, 0},
+  { 6, 73, 73, 41, 30, 0},
+  { 96, 80, 72, 71, 64, 0},
+  { 54, 73, 73, 73, 54, 0},
+  { 60, 74, 73, 73, 48, 0}
+};
+
+
+
+uint8_t R_score[6][6]
+{
+  {0, 0, 54, 54, 0, 0},
+  {12, 21, 21, 21, 14, 0},
+  {8, 16, 16, 8, 31, 0},
+  {14, 17, 17, 17, 14, 0},
+  {2, 17, 17, 17, 14, 0},
+  {70, 73, 73, 73, 49, 0}
+};
+
 class BreakOut
 {
   uint8_t level = 1;
@@ -77,10 +103,14 @@ public:
 
   void GetInput() // отвечает за ввод клавиш
   {
-      if (digitalRead(RIGHT_pin)==LOW||(analogRead(ANALOG_X_pin)> 400))
-        MoveBoard(1);
+      if (digitalRead(RIGHT_pin)==LOW||(analogRead(ANALOG_X_pin)> 553))
+        if(size !=3)
+          MoveBoard(1);
+        else MoveBoard(-1);
       else if (digitalRead(LEFT_pin)==LOW||(analogRead(ANALOG_X_pin)< 320))
-        MoveBoard(-1);
+        if(size !=3)
+          MoveBoard(-1);
+        else MoveBoard(1);
 
       if ((digitalRead(UP_pin)==LOW||(analogRead(ANALOG_Y_pin)> 553))&&onBoard)
       {
@@ -89,12 +119,21 @@ public:
 
   }
 
-  void Print(int i, int j)
+  void Print(uint8_t i, uint8_t j)
     {
       
-       for (int _i = 0; _i < size; ++_i)
-          for (int _j = 0; _j < size; ++_j)
+       if(size == 3)
+       {
+        
+        for (uint8_t _i = 0; _i < size; ++_i)
+          for (uint8_t _j = 0; _j < size; ++_j)
+              LCD.setPixel(size*i+_i,size*j+_j);
+       }
+       else {
+        for (uint8_t _i = 0; _i < size; ++_i)
+          for (uint8_t _j = 0; _j < size; ++_j)
               LCD.setPixel(size*j+_j,size*i+_i);
+       }
     }
 
   void display() // отвечает за отображение игры
@@ -113,8 +152,38 @@ public:
       //cout << endl;
     }
     //cout << score << endl; // вывод счета
-    LCD.print("Score:",13*size,size*2);
-    LCD.printNumI(score,13*size + 35,size*2);
+    if(size == 3)
+      {
+        for(int _i = 0; _i < 6; ++_i)
+          r_Print(5 - _i, 62, 40 - _i*6, false);
+          
+
+        int temp = score;
+        int del = 1;
+        uint8_t count = 1;
+        while(temp / 10 != 0)
+        {
+          temp /= 10;
+          count++;
+          del *= 10;
+        }
+        temp = score;
+
+        for(uint8_t _i = 0; _i < count; ++ _i)
+        {
+          
+          r_Print(temp / del, 70, 40 - _i*6, true);
+          
+          temp /= del ;
+          del /= 10;
+        }
+
+        LCD.update();
+      }
+      else {
+        LCD.print("Score:",13*size,size*2);
+        LCD.printNumI(score,13*size + 35,size*2);
+      }
 
     if (gameOver)
     {
@@ -123,6 +192,48 @@ public:
     }
     LCD.update();
   }
+
+  void r_Print(uint8_t num, uint8_t _x, uint8_t _y, bool cond)
+    {
+      
+      for(uint8_t _i = 0; _i < 7; ++_i)
+          for(uint8_t _j = 0; _j < 6; ++_j)
+            {
+              uint8_t** tmp = deCode(num, cond);
+              if(tmp[_j][_i] == 1)
+              LCD.setPixel(_x + _i,_y + _j);
+
+              for(int i = 0; i < 6; ++i)
+                delete tmp[i];
+              delete[] tmp;
+            }
+
+      
+    }
+
+    uint8_t** deCode(uint8_t num, bool cond)
+    {
+      uint8_t** tempMassive;
+      tempMassive = new uint8_t*[6];
+      for(int i = 0; i < 6; ++i)
+        tempMassive[i] = new uint8_t[7];
+        
+      for(int i = 0; i < 6; ++i)
+      {
+        uint8_t tmp;
+        if(cond)
+          tmp = RotatedNumbers[num][i];
+          else tmp = R_score[num][i];
+        for(int j = 0; j < 7; ++j)
+          {
+            tempMassive[i][6-j] = tmp % 2;
+              tmp /= 2;
+            
+          }
+      }
+
+          return tempMassive;
+    }
 
   void GameOver()
     {
@@ -457,7 +568,7 @@ public:
       speed = 600;
       //speed -= difficulty * 100;
 
-if(digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_F)==LOW)
+if(digitalRead(BUTTON_F)==LOW)
         {
           ShowMenu();
           delay(1000);
@@ -556,17 +667,17 @@ if(digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_F)==LOW)
             _chosenOption = 0;
             else _chosenOption += 1;
         LCD.clrScr();
-        LCD.drawRect(0,5 + _chosenOption*8, 6,11 + _chosenOption*8);
-
+        LCD.drawCircle(13,8 + _chosenOption*8,3);
+        LCD.drawCircle(71,8 + _chosenOption*8,3);
         //Вывод начальной панели меню
         if(_section == 0)
         {
-              LCD.print("GO",27,5);
-              LCD.print("TOP",20,13);
-              LCD.print("SETTINGS",17,21);
+              LCD.print("GO",36,5);
+              LCD.print("TOP",32,13);
+              LCD.print("SETTINGS",18,21);
               LCD.print("EXIT",30,29);
               LCD.update();
-              if(digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_F)==LOW||digitalRead(BUTTON_G)==LOW)
+              if(digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_G)==LOW)
                 //Действия для кнопки START
                 if(_chosenOption == 0)
                 {
@@ -619,7 +730,7 @@ if(digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_F)==LOW)
               LCD.print("CONTRAST",8,29);
               LCD.printNumI(contrast,70,29);
               LCD.update();
-              if(digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_F)==LOW||digitalRead(BUTTON_G)==LOW)
+              if(digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_G)==LOW)
                 if(_chosenOption == 0)
                 {
                   //Возвращаемся в изначальное меню
