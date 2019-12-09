@@ -48,7 +48,7 @@ class BreakOut
   int score = 0;
   int x_Dir;
   int y_Dir;
-  int speed = 600;
+  int speed = 1000;
   uint8_t field[18][11];
   bool gameOver = false;
   bool onBoard;
@@ -565,14 +565,9 @@ public:
     //int count = 0;
     onBoard = true;
     LCD.setContrast(contrast);
-      speed = 600;
-      //speed -= difficulty * 100;
+      speed = 1000;
+      speed -= difficulty * 200;
 
-if(digitalRead(BUTTON_F)==LOW)
-        {
-          ShowMenu();
-          delay(1000);
-        }
     
     start();
     while (!gameOver)
@@ -581,7 +576,14 @@ if(digitalRead(BUTTON_F)==LOW)
       update();
       //cout << count << " ";
       delay(speed);
+      if(digitalRead(BUTTON_F)==LOW)
+        {
+          ShowMenu();
+          delay(1000);
+        }
     }
+    
+
   }
 
   //Метод ввода настроек из памяти
