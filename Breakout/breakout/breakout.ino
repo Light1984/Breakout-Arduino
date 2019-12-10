@@ -50,7 +50,7 @@ class BreakOut
   int y_Dir;
   int speed = 1000;// скорость игры
   uint8_t field[18][11];
-  bool gameOver = false;
+  bool _gameOver = false;
   bool onBoard;
   uint8_t ball_x = 6;
   uint8_t ball_y = 15;
@@ -185,10 +185,10 @@ public:
         LCD.printNumI(score,13*size + 35,size*2);
       }
 
-    if (gameOver)
+    if (_gameOver)
     {
       LCD.clrScr();
-      GameOver();
+      gameOver();
     }
     LCD.update();
   }
@@ -235,7 +235,7 @@ public:
           return tempMassive;
     }
 
-  void GameOver()
+  void gameOver()
     {
       //Выводим информацию: уровень и очки
       LCD.clrScr();
@@ -300,7 +300,7 @@ public:
               delay(1000);
               calcRecords(_name, level, score);
               
-              gameOver = false;
+              _gameOver = false;
               LCD.clrScr();
               circleOfGame();//!
             }
@@ -309,7 +309,7 @@ public:
               LCD.clrScr();
               calcRecords(_name, level, score);
               _isPlaying = 0;
-              gameOver = false;
+              _gameOver = false;
               //return;
               LCD.update();
               delay(1000);
@@ -470,7 +470,7 @@ public:
       
         if (ball_y == 16) // В случае падения шарика
         {
-          GameOver();
+          gameOver();
           return;
         }
         
@@ -570,7 +570,7 @@ public:
 
     
     start();
-    while (!gameOver)
+    while (!_gameOver)
     {
       getInput();
       update();
@@ -578,7 +578,7 @@ public:
       delay(speed);
       if(digitalRead(BUTTON_F)==LOW)
         {
-          showMenu();
+          ();
           delay(1000);
         }
     }
