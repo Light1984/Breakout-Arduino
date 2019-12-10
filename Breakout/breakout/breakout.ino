@@ -16,7 +16,7 @@ extern unsigned char SmallFont[];
 //Функция сброса
 void(* resetFunc) (void) = 0;
 
-uint8_t RotatedNumbers[10][6]
+uint8_t RotatedNumbers[10][6] // Массив букв на размере 3
 {
   { 62, 81, 73, 69, 62, 0},
   { 0, 1, 127, 33, 0, 0},
@@ -32,7 +32,7 @@ uint8_t RotatedNumbers[10][6]
 
 
 
-uint8_t R_score[6][6]
+uint8_t R_score[6][6] // Массив чисел в размере 3
 {
   {0, 0, 54, 54, 0, 0},
   {12, 21, 21, 21, 14, 0},
@@ -48,7 +48,7 @@ class BreakOut
   int score = 0;
   int x_Dir;
   int y_Dir;
-  int speed = 1000;
+  int speed = 1000;// скорость игры
   uint8_t field[18][11];
   bool gameOver = false;
   bool onBoard;
@@ -119,7 +119,7 @@ public:
 
   }
 
-  void Print(uint8_t i, uint8_t j)
+  void Print(uint8_t i, uint8_t j) // Вывод символов в игре при размере 1,2
     {
       
        if(size == 3)
@@ -193,7 +193,7 @@ public:
     LCD.update();
   }
 
-  void r_Print(uint8_t num, uint8_t _x, uint8_t _y, bool cond)
+  void r_Print(uint8_t num, uint8_t _x, uint8_t _y, bool cond) // Вывод символов при размере 3
     {
       
       for(uint8_t _i = 0; _i < 7; ++_i)
@@ -302,7 +302,7 @@ public:
               
               gameOver = false;
               LCD.clrScr();
-              loop();
+              circleOfGame();//!
             }
             if (digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_F)==LOW)
             {
@@ -559,7 +559,7 @@ public:
     display();
   }
 
-  void loop() //отвечает за бесконечный цикл игры
+  void circleOfGame()  //отвечает за бесконечный цикл игры
   {
     level = 1;
     //int count = 0;
@@ -586,8 +586,8 @@ public:
 
   }
 
-  //Метод ввода настроек из памяти
-    void SetVals()
+  
+    void SetVals()//Метод ввода настроек из памяти//Метод ввода настроек из памяти
     {
       size = 2;
       difficulty = 0;
@@ -654,7 +654,7 @@ public:
         EEPROM.get(180, Top3level);
     }
 
-    int ShowMenu()
+    int ShowMenu() // Полная реализация меню
     {
       while(true)
       {
@@ -686,7 +686,7 @@ public:
                   //Начинаем игру
                   LCD.clrScr();
                   _isPlaying = 1;
-                  loop();
+                  circleOfGame();
                 }
                 //Для кнопки RECORDS
                 else if(_chosenOption == 1)
