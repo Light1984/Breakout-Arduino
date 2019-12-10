@@ -80,7 +80,7 @@ class BreakOut
 
 public:
 
-  void MoveBoard(int DeltaX) // отвечает за передвижение платформы и шарика на нем
+  void moveBoard(int DeltaX) // отвечает за передвижение платформы и шарика на нем
   {
     if (x + DeltaX < 1 || x+DeltaX+3 > 9) // убирает возможность выхода платформы за рамки
       return;
@@ -101,16 +101,16 @@ public:
     display();
   }
 
-  void GetInput() // отвечает за ввод клавиш
+  void getInput() // отвечает за ввод клавиш
   {
       if (digitalRead(RIGHT_pin)==LOW||(analogRead(ANALOG_X_pin)> 553))
         if(size !=3)
-          MoveBoard(1);
-        else MoveBoard(-1);
+          moveBoard(1);
+        else moveBoard(-1);
       else if (digitalRead(LEFT_pin)==LOW||(analogRead(ANALOG_X_pin)< 320))
         if(size !=3)
-          MoveBoard(-1);
-        else MoveBoard(1);
+          moveBoard(-1);
+        else moveBoard(1);
 
       if ((digitalRead(UP_pin)==LOW||(analogRead(ANALOG_Y_pin)> 553))&&onBoard)
       {
@@ -119,7 +119,7 @@ public:
 
   }
 
-  void Print(uint8_t i, uint8_t j) // Вывод символов в игре при размере 1,2
+  void print(uint8_t i, uint8_t j) // Вывод символов в игре при размере 1,2
     {
       
        if(size == 3)
@@ -145,9 +145,9 @@ public:
       for (int j = 0; j < 11; ++j)
         switch (field[i][j])
         {
-        case 8: Print(i,j); break; // границы поля
+        case 8: print(i,j); break; // границы поля
         case 0:  break; // Пустое пространство
-        default: Print(i,j); break; // платформа, шарик, плитки
+        default: print(i,j); break; // платформа, шарик, плитки
         }
       //cout << endl;
     }
@@ -155,7 +155,7 @@ public:
     if(size == 3)
       {
         for(int _i = 0; _i < 6; ++_i)
-          r_Print(5 - _i, 62, 40 - _i*6, false);
+          rPrint(5 - _i, 62, 40 - _i*6, false);
           
 
         int temp = score;
@@ -172,7 +172,7 @@ public:
         for(uint8_t _i = 0; _i < count; ++ _i)
         {
           
-          r_Print(temp / del, 70, 40 - _i*6, true);
+          rPrint(temp / del, 70, 40 - _i*6, true);
           
           temp /= del ;
           del /= 10;
@@ -193,7 +193,7 @@ public:
     LCD.update();
   }
 
-  void r_Print(uint8_t num, uint8_t _x, uint8_t _y, bool cond) // Вывод символов при размере 3
+  void rPrint(uint8_t num, uint8_t _x, uint8_t _y, bool cond) // Вывод символов при размере 3
     {
       
       for(uint8_t _i = 0; _i < 7; ++_i)
@@ -298,7 +298,7 @@ public:
             {
               
               delay(1000);
-              CalcRecords(_name, level, score);
+              calcRecords(_name, level, score);
               
               gameOver = false;
               LCD.clrScr();
@@ -307,7 +307,7 @@ public:
             if (digitalRead(BUTTON_E)==LOW||digitalRead(BUTTON_F)==LOW)
             {
               LCD.clrScr();
-              CalcRecords(_name, level, score);
+              calcRecords(_name, level, score);
               _isPlaying = 0;
               gameOver = false;
               //return;
@@ -321,7 +321,7 @@ public:
         }
     }
 
-    void CalcRecords(String _name, int _level, int _score)
+    void calcRecords(String _name, int _level, int _score)
     {
       
       if (_score >= Top1score)
@@ -466,7 +466,7 @@ public:
           y_Dir *= -1;
         
 
-        Collide(); // условие плиток для шарика
+        collide(); // условие плиток для шарика
       
         if (ball_y == 16) // В случае падения шарика
         {
@@ -482,18 +482,18 @@ public:
     }
     
   }
-  void Destroy(int _x, int _y) // уничтожение плитки и зачисление очков
+  void destroy(int _x, int _y) // уничтожение плитки и зачисление очков
   {
     field[_y][_x] = 0;
     score += 100;
   }
 
-  void Collide() // отвечает за взаимодействие шарика с плитками
+  void collide() // отвечает за взаимодействие шарика с плитками
   {
     if(field[ball_y][ball_x + x_Dir] == 2 & field[ball_y - y_Dir][ball_x] == 2)
     {
-      Destroy(ball_x + x_Dir, ball_y);
-      Destroy(ball_x, ball_y - y_Dir);
+      destroy(ball_x + x_Dir, ball_y);
+      destroy(ball_x, ball_y - y_Dir);
       y_Dir *= -1;
       x_Dir *= -1;
       return;
@@ -501,20 +501,20 @@ public:
 
     if (field[ball_y][ball_x + x_Dir] == 2)
     {
-      Destroy(ball_x + x_Dir, ball_y);
+      destroy(ball_x + x_Dir, ball_y);
       x_Dir *= -1;
       return;
     }
 
     if (field[ball_y - y_Dir][ball_x] == 2)
     {
-      Destroy( ball_x, ball_y - y_Dir);
+      destroy( ball_x, ball_y - y_Dir);
       y_Dir *= -1;
       return;
     }
     if (field[ball_y - y_Dir][ball_x + x_Dir] == 2)
     {
-      Destroy(ball_x + x_Dir, ball_y - y_Dir);
+      destroy(ball_x + x_Dir, ball_y - y_Dir);
       y_Dir *= -1;
       x_Dir *= -1;
       return;
@@ -539,11 +539,11 @@ public:
     ball_x = 6;
     ball_y = 15;
     field[ball_y][ball_x] = 5;
-    DrawLevel();
+    drawLevel();
     display();
   }
 
-  void DrawLevel() // "Прорисовка" уровня
+  void drawLevel() // "Прорисовка" уровня
   {
     for (int i = 2; i < 9; ++i)
     {
@@ -572,13 +572,13 @@ public:
     start();
     while (!gameOver)
     {
-      GetInput();
+      getInput();
       update();
       //cout << count << " ";
       delay(speed);
       if(digitalRead(BUTTON_F)==LOW)
         {
-          ShowMenu();
+          showMenu();
           delay(1000);
         }
     }
@@ -587,7 +587,7 @@ public:
   }
 
   
-    void SetVals()//Метод ввода настроек из памяти//Метод ввода настроек из памяти
+    void setVals()//Метод ввода настроек из памяти//Метод ввода настроек из памяти
     {
       size = 2;
       difficulty = 0;
@@ -654,7 +654,7 @@ public:
         EEPROM.get(180, Top3level);
     }
 
-    int ShowMenu() // Полная реализация меню
+    int showMenu() // Полная реализация меню
     {
       while(true)
       {
@@ -834,12 +834,12 @@ void setup() {
   LCD.setFont(SmallFont);
   randomSeed(analogRead(0));
 
-  breakout.SetVals();
-  breakout.ShowMenu();
+  breakout.setVals();
+  breakout.showMenu();
 }
 
 void loop() {
   
   LCD.clrScr();
-  breakout.ShowMenu();
+  breakout.showMenu();
 }
