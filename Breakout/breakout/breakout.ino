@@ -49,6 +49,7 @@ class BreakOut
   int x_Dir;
   int y_Dir;
   int speed = 1000;// скорость игры
+  int health = 3; // ;попытки
   uint8_t field[18][11];
   bool _gameOver = false;
   bool onBoard;
@@ -156,6 +157,8 @@ public:
       {
         for(int _i = 0; _i < 6; ++_i)
           rPrint(5 - _i, 62, 40 - _i*6, false);
+          for(int i = 0; i < health; ++i)
+        LCD.drawCircle(2*size + i*8, 42, 3);
           
 
         int temp = score;
@@ -183,6 +186,8 @@ public:
       else {
         LCD.print("Score:",13*size,size*2);
         LCD.printNumI(score,13*size + 35,size*2);
+        for(int i = 0; i < health; ++i)
+        LCD.drawCircle(15*size + i*8 - 1, size*2 + 11, 3);
       }
 
     if (_gameOver)
@@ -470,8 +475,26 @@ public:
       
         if (ball_y == 16) // В случае падения шарика
         {
-          gameOver();
+          if (health == 1)
+          {
+            gameOver();
           return;
+          }
+          else
+          {
+            int chakalaka[5][7];
+            for(int i = 0; i < 5;++i)
+            for(int j = 0; j < 7; ++j)
+            chakalaka[i][j] = field[i+2][j+2];
+            onBoard = true;
+            start(1);
+            health--;
+            for(int i = 0; i < 5;++i)
+            for(int j = 0; j < 7; ++j)
+           field[i+2][j+2] = chakalaka[i][j];
+           display();
+     return;
+            }
         }
         
 
@@ -523,7 +546,7 @@ public:
 
   }
 
-  void start() // отвечает за начальную позицию игры
+  void start(int arg) // отвечает за начальную позицию игры
   {
     for (int i = 0; i < 18; ++i)
       for (int j = 0; j < 11; ++j)
@@ -539,12 +562,14 @@ public:
     ball_x = 6;
     ball_y = 15;
     field[ball_y][ball_x] = 5;
+    if(arg == 0)
     drawLevel();
     display();
   }
 
   void drawLevel() // "Прорисовка" уровня
   {
+   
     for (int i = 2; i < 9; ++i)
     {
       field[2][i] = 2;
@@ -555,13 +580,38 @@ public:
     {
       field[3][i] = 2;
       field[5][i] = 2;
-    }
+    } 
     display();
+  }
+
+bool checkLevel() 
+  {
+    int check = 0;
+    for (int i = 2; i < 9; ++i)
+    {
+      if(field[2][i] == 2 ||
+      field[4][i] == 2 ||
+      field[6][i] == 2 )
+      check++;
+    }
+    for (int i = 3; i < 8; ++i)
+    {
+      if(field[3][i] == 2 ||
+      field[5][i] == 2)
+      check++;
+    }
+
+    if(check == 0)
+    return true;
+    else
+    return false;
+    
   }
 
   void circleOfGame()  //отвечает за бесконечный цикл игры
   {
     level = 1;
+    health = 3;
     //int count = 0;
     onBoard = true;
     LCD.setContrast(contrast);
@@ -569,11 +619,15 @@ public:
       speed -= difficulty * 200;
 
     
-    start();
+    start(0);
     while (!_gameOver)
     {
-      getInput();
+      if (checkLevel())
+     { onBoard = true;
+      start(0);
+      }
       update();
+      getInput();
       //cout << count << " ";
       delay(speed);
       if(digitalRead(BUTTON_F)==LOW)
