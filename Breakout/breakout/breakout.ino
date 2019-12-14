@@ -245,13 +245,13 @@ public:
       //Выводим информацию: уровень и очки
       LCD.clrScr();
       LCD.print("Game Over",0,0);
-      LCD.print("Level:",0,8);
-      LCD.printNumI(level,40,8);
+      /*LCD.print("Level:",0,8);
+      LCD.printNumI(level,40,8); */
       
-      LCD.print("Score:",0,16);
-      LCD.printNumI(score,40,16);
-      LCD.print("Press Any Key",0,24);
-      LCD.print("To Continue",0,32);
+      LCD.print("Score:",0,8);
+      LCD.printNumI(score,40,8);
+      LCD.print("Press Any Key",0,16);
+      LCD.print("To Continue",0,24);
       LCD.update();
       //Бесконечный цикл, ждущий ввода
       while (true)
