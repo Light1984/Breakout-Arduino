@@ -578,7 +578,7 @@ public:
       delay(speed);
       if(digitalRead(BUTTON_F)==LOW)
         {
-          ();
+          showMenu();
           delay(1000);
         }
     }
